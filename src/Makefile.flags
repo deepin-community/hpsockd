@@ -1,0 +1,34 @@
+# (c) Copyright Hewlett-Packard Company 1997-2000
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+#CC=purify -cache-dir=/users/lamont/.purify-cache -follow-child-processes=yes cc
+COMMON=-I../util -DYYDEBUG=1
+
+HP9CFLAGS=-Ae -z -DHAVE_SHL_LOAD -UHAVE_MMAP ${COMMON}
+HP9CLFLAGS=-z -Wl,-E -ldld -ldb -lcl
+HPCFLAGS=-Ae -z -DHAVE_SHL_LOAD -DHAVE_MMAP ${COMMON}
+#HPCLFLAGS=-z -Wl,-E,-B,immediate -ldld -ldb -lcl -L../util
+HPCLFLAGS=-z -Wl,-E,-B,immediate -ldld -ldb -lcl -L../util
+HPCLOPTFLAGS=-u_end_ /opt/langtools/lib/end.o
+HPDEBUG=-g
+HPOPT=+DA1.1 +O2 +Olibcalls +ESlit +Ofastaccess +Onolimit
+#HPOPT=+O1 -g +Olibcalls +ESlit +Ofastaccess +Onolimit
+
+#LINUXCFLAGS=-DHAVE_THREADS -DHAVE_DLOPEN -DHAVE_MMAP ${COMMON}
+#LINUXCLFLAGS=-lpthread -ldl -ldb
+LINUXCFLAGS=-UHAVE_THREADS -DHAVE_DLOPEN -DHAVE_MMAP -DDB_185 -DCONFIG_FILE=\\\"/etc/hpsockd.conf\\\" -DSOCKD_PATH=\\\"/usr/sbin/hpsockd\\\" ${COMMON}
+LINUXCLFLAGS=-ldl -ldb
+LINUXDEBUG=-g
+LINUXOPT=-O

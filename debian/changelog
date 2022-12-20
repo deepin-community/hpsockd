@@ -1,0 +1,184 @@
+hpsockd (0.17-deepin1) unstable; urgency=medium
+
+  * Rebuild
+
+ -- Deepin Packages Builder <packages@deepin.org>  Mon, 14 Nov 2022 17:43:06 +0800
+
+hpsockd (0.17) unstable; urgency=low
+
+  * Drop documenation to make the pedants happy.  Closes: #480372
+
+ -- LaMont Jones <lamont@debian.org>  Sat, 14 Jun 2008 09:05:19 -0600
+
+hpsockd (0.16) unstable; urgency=low
+
+  [Petter Reinholdtsen]
+
+  * init.d: add LSB init stuff.  Closes: #462716
+
+ -- LaMont Jones <lamont@debian.org>  Fri, 28 Mar 2008 07:45:51 -0600
+
+hpsockd (0.15) unstable; urgency=low
+
+  * Use libdb 4.6.  Closes: #421941
+  * Support GNU/kFreeBSD.  Closes: #414971
+  * Remove negot_file on purge.  Closes: #328321
+  * Document git repository location
+  * Debhelper 5
+  * Copyright GPLv2
+
+ -- LaMont Jones <lamont@debian.org>  Tue, 11 Sep 2007 12:02:56 -0600
+
+hpsockd (0.14) unstable; urgency=low
+
+  * Better handle short udp packets
+
+ -- LaMont Jones <lamont@debian.org>  Wed, 10 Nov 2004 14:33:25 -0700
+
+hpsockd (0.13) unstable; urgency=low
+
+  * Use db4.2 instead of db4.1.  Closes: #263234
+  * Fix gcc-3.4 errors.  Closes: #263236
+
+ -- LaMont Jones <lamont@debian.org>  Sun, 12 Sep 2004 12:01:32 -0600
+
+hpsockd (0.12) unstable; urgency=low
+
+  * Fix description.  Closes: #135448, #209646
+  * Handle missing config file in init.d better.  Closes: #131618
+
+ -- LaMont Jones <lamont@debian.org>  Sat, 13 Sep 2003 20:11:08 -0600
+
+hpsockd (0.11) unstable; urgency=low
+
+  * Remove RFC's from the package.  Closes: #199805
+
+ -- LaMont Jones <lamont@debian.org>  Fri, 29 Aug 2003 09:58:12 -0600
+
+hpsockd (0.10) unstable; urgency=low
+
+  * Add -v option to print version.
+
+ -- LaMont Jones <lamont@debian.org>  Thu, 27 Feb 2003 10:23:44 -0700
+
+hpsockd (0.9) unstable; urgency=low
+
+  * Fix bad sign assumption.  Closes: #177386
+
+ -- LaMont Jones <lamont@debian.org>  Sun, 19 Jan 2003 07:04:22 -0700
+
+hpsockd (0.8) unstable; urgency=high
+
+  * Cleanup ping/traceroute command handling.
+
+ -- LaMont Jones <lamont@debian.org>  Mon, 16 Dec 2002 22:19:24 -0700
+
+hpsockd (0.7) unstable; urgency=low
+
+  * Add more footprinting.
+  * 2.4 select appears to return true for read on non-connected sockets.
+    Avoid that.
+
+ -- LaMont Jones <lamont@debian.org>  Fri, 26 Jul 2002 21:12:14 -0600
+
+hpsockd (0.6) unstable; urgency=low
+
+  * use anonymous mmap regions for client buffer memory, so that we
+    can give it back to the kernel when the client goes away.
+
+ -- LaMont Jones <lamont@debian.org>  Tue, 26 Mar 2002 20:44:32 -0700
+
+hpsockd (0.5.1) unstable; urgency=low
+  * Add footprint call on ENOBUFS in accept.
+
+ -- LaMont Jones <lamont@debian.org>  Mon, 28 Jan 2002 11:14:17 -0700
+
+hpsockd (0.5) unstable; urgency=low
+  * Fix corner case with dnsHandler dying causing corruption in the
+    connection data structures.  Closes: #127721.
+  * Don't keep accepting data when the other side is blocked.
+  * Allow limits on number of clients-per-minute.
+  * sdc dumpconfig caused freeing-free-pointer problems.
+
+ -- LaMont Jones <lamont@debian.org>  Fri, 28 Dec 2001 23:11:34 -0700
+
+hpsockd (0.4) unstable; urgency=low
+
+  * Add undocumented links for now.
+
+ -- LaMont Jones <lamont@debian.org>  Sat, 22 Dec 2001 19:50:51 -0700
+
+hpsockd (0.3.9) unstable; urgency=low
+
+  * Try accepting up to 10 clients each pass through the select loop.
+
+ -- LaMont Jones <lamont@debian.org>  Mon, 17 Dec 2001 10:29:04 -0700
+
+hpsockd (0.3.8) unstable; urgency=low
+  * We were leaking the dns helper socket at spawnChild() time.
+    Don't do that.
+  * Don't prevent core files when debug!=0; default debug to
+    DBG_SANITY.
+
+ -- LaMont Jones <lamont@debian.org>  Thu,  6 Dec 2001 13:04:30 -0600
+
+hpsockd (0.3.7) unstable; urgency=low
+  * Handle fdInfo overflow in udpAssoc.
+
+ -- LaMont Jones <lamont@debian.org>  Wed, 14 Nov 2001 15:09:28 -0600
+
+hpsockd (0.3.6) unstable; urgency=low
+  * More highFd fixes, more footprinting.
+  * reduce memory footprint more agressively.
+
+ -- LaMont Jones <lamont@debian.org>  Wed, 14 Nov 2001 12:08:15 -0600
+
+hpsockd (0.3.5) unstable; urgency=low
+  * Bump highFd in listenRecv, to handle closing things properly in spawnChild.
+
+ -- LaMont Jones <lamont@debian.org>  Wed,  7 Nov 2001 23:43:33 -0600
+
+hpsockd (0.3.4) unstable; urgency=low
+  * More fingerprinting, sanity checks on data structures.
+
+ -- LaMont Jones <lamont@debian.org>  Thu,  1 Nov 2001 10:11:22 -0600
+
+hpsockd (0.3.3) unstable; urgency=low
+  * Fix footprinting code. sigh.
+
+ -- LaMont Jones <lamont@debian.org>  Thu, 23 Aug 2001 11:26:15 -0600
+
+hpsockd (0.3.2) unstable; urgency=low
+  * Add footprinting code to track down problems.
+
+ -- LaMont Jones <lamont@debian.org>  Tue, 29 May 2001 11:40:15 -0600
+
+hpsockd (0.3.1) unstable; urgency=low
+  * Start allowing alternate storage techniques for userpass.
+  * point at syslog on config file parse errors.
+
+ -- LaMont Jones <lamont@debian.org>  Mon, 26 Mar 2001 10:26:20 -0700
+
+hpsockd (0.3) unstable; urgency=low
+  * Fix the path for hpsockd in sdc.  Fixes segv on restart and start.
+  * Port and host comparisons were trying to compare network byte order
+    values.
+
+ -- LaMont Jones <lamont@debian.org>  Thu,  1 Mar 2001 22:03:46 -0700
+
+hpsockd (0.2) unstable; urgency=low
+  * Add byacc to build-depends, remove version of libdb2-dev.
+  * Times and ID's in logfiles should be in network byte order.
+
+ -- LaMont Jones <lamont@debian.org>  Thu,  1 Mar 2001 12:26:27 -0700
+
+hpsockd (0.1-2) unstable; urgency=low
+  * Lintian cleanup.
+  * Network byte order problems, null pointer issues...
+
+ -- LaMont Jones <lamont@debian.org>  Thu, 22 Feb 2001 20:10:13 -0700
+
+hpsockd (0.1-1) unstable; urgency=low
+  * New package
+
+ -- LaMont Jones <lamont@debian.org>  Thu, 15 Feb 2001 20:22:40 -0700

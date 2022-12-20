@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.04 [en] (X11; U; Linux 2.0.30 i586) [Netscape]">
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>
+Signals</H1></CENTER>
+The following signals are used to signal sockd:
+<BR>&nbsp;
+<H2>
+SIGHUP</H2>
+Causes sockd to re-read the configuration file.&nbsp;&nbsp; If the new
+configuration file fails to parse, the previous configuration remains intact.
+<H2>
+SIGINT</H2>
+Indicates that the log file has moved, and sockd should reopen its log
+file.&nbsp; At some point, this will include rewriting the startup lines
+for all open connections.
+<H2>
+SIGIOT</H2>
+Indicates that sockd should no longer listen for new connections.&nbsp;
+The listen socket is closed (meaning that a new daemon can be launched.)
+<H2>
+SIGTERM</H2>
+Close all connections and terminate.
+<H2>
+SIGUSR1</H2>
+Dump client information.
+<BR>XXX - not implemented
+<H2>
+SIGUSR2</H2>
+Dump configuration.&nbsp; This is done in a format that can be fed back
+in as a configuration file, albeit not identical to the one that was read.
+</BODY>
+</HTML>

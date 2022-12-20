@@ -1,0 +1,138 @@
+#!/bin/ksh
+
+PATH=${PATH}:/usr/sbin
+# usage maketape fset > PSF
+dep() {
+    case $1 in
+	SOCKS-SERV)	;;
+	*)		print -u2 Unknown fileset ${fs};
+			exit 1;;
+    esac
+    return 0
+}
+
+desc() {
+    case $1 in
+	SOCKS-SERV)	fd="Socks Server";;
+	*)		print -u2 Unknown fileset ${fs};
+			exit 1;;
+    esac
+    print ${fd}
+    return 0
+}
+
+tape_fpkg() {
+    typeset fsets=$1
+    typeset vers=$2
+    typeset osrel=$3
+    print "media_format A.B8.05"
+
+    for fs in $(cd $fsets; /bin/ls -d [A-Z]*); do
+	mkdir -p ${fsets}/${fs}/system/${fs}
+	for f in customize decustomize; do 
+	    if [[ -f Fshp-ux/${fs}/$f ]]; then
+		rm -f ${fsets}/${fs}/system/${fs}/${f}
+		ln -f Fshp-ux/${fs}/${f} ${fsets}/${fs}/system/${fs}
+	    fi
+	done
+	pn=SOCKS
+	pd="Socks"
+	dep=""
+    	cat <<-EOF
+	    ########
+	    # Begin Fileset:  ${fs}
+	    #
+	    pn	${pn}
+	    pd	"${pd}"
+	    fn	${fs}
+	    fd	"$(desc ${fs})"
+	    fv	$vers
+	    ff	CD
+	    $(dep ${fs})
+	    media_order	6
+	    pr	$(pwd)/${fsets}/${fs}/=/
+	    # fdperm	bin bin 555
+	    F *
+	    # End of Fileset: ${fs}
+EOF
+    done
+    print "########"
+    return 0
+}
+
+tape_swpackage() {
+    typeset fsets=$1
+    typeset vers=$2
+    typeset osrel=$3
+    cat <<EOF
+depot
+tag             SOCKS
+title           Socks
+vendor
+   tag          HP
+   title        Hewlett-Packard Company
+end
+product
+   tag          SOCKS
+   title        Socks
+   architecture HP-UX_B.10.0_700/800
+   machine_type 9000/[678]??
+   os_name      HP-UX
+   os_release   ?.${osrel}
+   is_locatable TRUE
+   revision	${vers}
+ subproduct
+   tag          Server
+   title        SOCKS Server
+   contents     SOCKS-SERV
+ end
+EOF
+
+    for fs in $(cd $fsets; /bin/ls -d [A-Z]*); do
+    	print "  fileset\n   tag ${fs}\n   title\t$(desc ${fs})"
+	print "   revision $vers\n"
+	print "   is_kernel\tFALSE\n   is_reboot\tFALSE\n   is_secure\tFALSE"
+	case ${fs} in
+	    *)	;;
+	esac
+	mkdir -p $fsets/control/${fs}
+	for f in checkinstall preinstall postinstall configure unconfigure verify checkremove preremove postremove; do 
+	    if [[ -f Fshp-ux/${fs}/$f ]]; then
+		rm -f ${fsets}/control/${fs}/${f}
+		ln -f Fshp-ux/${fs}/$f ${fsets}/control/${fs}
+		print "   ${f}\t$(pwd)/$fsets/control/${fs}/$f"
+	    fi
+	done
+   	# print "   file_permissions  -o bin -g bin -m 0555"
+   	print "   directory\t$(pwd)/${fsets}/${fs}/=/\n   file *\n  end"
+    done
+    print " end"
+    return 0
+}
+
+fsets=${1:-Fsets.800}
+fsets=${fsets%/}
+vers=$(sed -n '1,1s/^.*(\(.*\)).*/\1/p' debian/changelog)
+arch=${fsets#Fsets.}
+osrel=$(echo $arch | sed -e 's/800.//' -e 's/\_/./g')
+
+
+psf=PSF.$$
+log=/tmp/fpkg.log.$$
+trap "rm -f $psf; exit" 0 1 3 5 15
+
+[[ ${arch#800} = ${arch} ]] && a2="" || a2="-S700"
+
+case ${arch} in
+    800.1*)
+	tape_swpackage $fsets $vers $osrel >${psf}
+	swpackage -xlogfile=${log} -xtarget_type=tape -s ${psf} \
+	    -d Bin/tape.${arch}
+	grep -e '^[EW]' ${log} && print "see ${log} for details" || rm ${log}
+	;;
+    800*)
+	tape_fpkg $fsets $vers $osrel > ${psf}
+	fpkg -m tape -a Bin/tape.${arch} -S ${arch%.*} -L ${log} ${a2} ${psf}
+	grep -e '^[EW]' ${log} && print "see ${log} for details" || rm ${log}
+	;;
+esac

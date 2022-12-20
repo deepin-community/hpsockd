@@ -1,0 +1,7 @@
+/etc/init.d
+/usr/sbin
+/usr/lib/hpsockd
+/usr/share/doc/hpsockd
+/usr/share/doc/hpsockd/examples
+/usr/share/doc/hpsockd/html
+/var/cache/hpsockd

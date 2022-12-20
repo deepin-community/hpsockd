@@ -1,0 +1,16 @@
+Source: hpsockd
+Section: net
+Priority: extra
+Maintainer: LaMont Jones <lamont@debian.org>
+Build-Depends: libdb-dev (>=4.6.19), debhelper (>=5), flex, byacc
+Standards-Version: 3.7.3
+XS-Vcs-Browser: http://git.debian.org/?p=users/lamont/hpsockd.git
+XS-Vcs-Git: git://git.debian.org/~lamont/hpsockd.git
+
+Package: hpsockd
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: HP SOCKS server
+ Hpsockd is yet-another SOCKS server, with both version 5 (RFC1928 and
+ others) as well as version 4 support, originally written at
+ Hewlett-Packard Company.

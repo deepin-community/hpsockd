@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.04 [en] (X11; U; HP-UX B.10.20 9000/770) [Netscape]">
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>
+Socks Daemon Control (sdc)</H1></CENTER>
+<B>sdc</B> is used to control the socks daemon, and display status information
+about it.&nbsp; The following arguments are accepted:
+<BR>&nbsp;
+<TABLE BORDER COLS=2 WIDTH="100%" NOSAVE >
+<TR NOSAVE>
+<TD WIDTH="100" NOSAVE>status [<I>time</I>]</TD>
+
+<TD>Display status information on the currently listening daemons.&nbsp;
+If <I>time</I> is specified, the process repeats every <I>time</I> seconds.</TD>
+</TR>
+
+<TR>
+<TD>reload</TD>
+
+<TD>Cause sockd to re-read the configuration file</TD>
+</TR>
+
+<TR>
+<TD>newlog</TD>
+
+<TD>Cause sockd to reopen the usage log.&nbsp; New startup records for
+every active client are written.</TD>
+</TR>
+
+<TR>
+<TD>dumpconfig</TD>
+
+<TD>Cause sockd to dump its current configuration to the file given by
+<B>dump-file</B>, with sockd's pid appended.</TD>
+</TR>
+
+<TR>
+<TD>dumpclients</TD>
+
+<TD>Cause sockd to dump information about all active clients to the file
+given by <B>client-file</B>,&nbsp; with sockd's pid appended.</TD>
+</TR>
+
+<TR>
+<TD>unlisten</TD>
+
+<TD>Cause sockd to stop listening.&nbsp; Existing connections remain open,
+but no new connections will be created.&nbsp; Sockd will also stop listening
+to <B>sdc</B> at this point.</TD>
+</TR>
+
+<TR>
+<TD>stop</TD>
+
+<TD>Stop sockd.&nbsp; This will close any open connections.</TD>
+</TR>
+
+<TR>
+<TD>start</TD>
+
+<TD>Launch /opt/socks/sbin/sockd</TD>
+</TR>
+
+<TR>
+<TD>restart</TD>
+
+<TD>Equivalent to unlisten followed by start</TD>
+</TR>
+</TABLE>
+&nbsp;
+</BODY>
+</HTML>

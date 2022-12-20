@@ -1,0 +1,8 @@
+Document: hpsockd
+Title: HP SOCKS documentation
+Author: LaMont Jones <lamont@hp.com>
+Section: Apps/Net
+
+Format: HTML
+Index: /usr/share/doc/hpsockd/html/index.html
+Files: /usr/share/doc/hpsockd/html/*.html

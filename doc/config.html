@@ -1,0 +1,356 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.04j2 [en] (X11; I; HP-UX B.10.20 9000/770) [Netscape]">
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>
+Sockd configuration file</H1></CENTER>
+
+<PRE>daemon {
+&nbsp;&nbsp;&nbsp; negotiate-file&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "<I>filename</I>";
+&nbsp; [ directory&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "<I>dirname</I>"; ]
+&nbsp; [ umask&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#number">number</A></I>; ]
+&nbsp; [ listen-address&nbsp;&nbsp;&nbsp;&nbsp; { ifaddr; ...}; ]
+&nbsp; [ service&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "<I>name</I>"; ]
+&nbsp; [ port&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#number">number</A></I>; ]
+&nbsp; [ name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "<I>name</I>"; ]
+&nbsp; [ inetdsec-file&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "<I>filename</I>"; | none; ]
+&nbsp; [ pre-fork&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#number">number</A></I>; ]
+&nbsp; [ dns-helper&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#number">number</A></I>; ]
+&nbsp; [ listen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <I>min</I>, <I>max</I> }; ]
+&nbsp; [ client&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <I>min</I>, <I>max</I> }; ]
+&nbsp; [ user&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ "<I>user name</I>" | <I><A HREF="#number">number</A></I> ]; ]
+&nbsp; [ group&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ "<I>group name</I>" | <I><A HREF="#number">number</A></I> ]; ]
+&nbsp; [ poll&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#time spec">time spec</A></I>; ]
+&nbsp; [ flags&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { [ v4-only; | no-keepalive; ] }; ]
+};</PRE>
+The daemon directive specifies global information about the daemon.&nbsp;
+The various options mean:
+<BR>&nbsp;
+<TABLE BORDER COLS=2 WIDTH="100%" NOSAVE >
+<TR NOSAVE>
+<TD WIDTH="40" NOSAVE>negotiate-file</TD>
+
+<TD>Name of the negotiation file. This file is used by the various
+listeners to determine who listens.</TD>
+</TR>
+
+<TR>
+<TD>directory</TD>
+
+<TD>Set working directory for sockd. Default is /var/opt/socks</TD>
+</TR>
+
+<TR>
+<TD>umask</TD>
+
+<TD>Set umask for sockd. Default is 0o002.</TD>
+</TR>
+
+<TR>
+<TD>listen-address</TD>
+
+<TD>Interface address(es) to listen on. Default is every configured
+(UP) interface, and <B>INADDR_ANY</B> (to catch any late additions).</TD>
+</TR>
+
+<TR NOSAVE>
+<TD NOSAVE>service</TD>
+
+<TD>Service name used in searching <B>inetdsec-file</B>. Default
+is the service corresponding to <B>port</B>. If neither <B>service</B>
+nor <B>port</B> is specified, the service and port <B>socks</B> are used.</TD>
+</TR>
+
+<TR>
+<TD>port</TD>
+
+<TD>Port number to listen on. Default is the port corresponding to
+<B>service</B>.</TD>
+</TR>
+
+<TR>
+<TD>name</TD>
+
+<TD>Name used in syslog calls.</TD>
+</TR>
+
+<TR>
+<TD>inetdsec-file</TD>
+
+<TD>Full path to inetd.sec. Default is <B>none</B>.</TD>
+</TR>
+
+<TR>
+<TD>pre-fork</TD>
+
+<TD>Number of listening demons to initially start.</TD>
+</TR>
+
+<TR>
+<TD>dns-helper</TD>
+
+<TD>Number of dns helper porocesses. Only applies to non-threaded
+platforms.</TD>
+</TR>
+
+<TR>
+<TD>listen</TD>
+
+<TD>Minimum and maximum listening daemons.</TD>
+</TR>
+
+<TR>
+<TD>client</TD>
+
+<TD>Minimum number of clients before a daemon stops listening, and maximum
+number of clients for a daemon. (It forks when it gets to the maximum.)</TD>
+</TR>
+
+<TR>
+<TD>user</TD>
+
+<TD>User name for daemons. If a name is used and <B>group</B> is
+not specified, then the primary group for <B>user</B> is used.</TD>
+</TR>
+
+<TR>
+<TD>group</TD>
+
+<TD>Group name for daemons.</TD>
+</TR>
+
+<TR>
+<TD>poll</TD>
+
+<TD>Maximum time before a daemon checks to see if it should (or should
+not) be listening.</TD>
+</TR>
+
+<TR NOSAVE>
+<TD>flags</TD>
+
+<TD NOSAVE>Any flags for daemon. <B>v4-only</B> disables all socks
+v5 functionality. (XXX -This will not be in the production version.)
+<B>no-keepalive</B> disables TCP keepalives for TCP connections (which are
+on by default.
+</TD>
+</TR>
+
+</TABLE>
+The logic for a daemon to decide if it should listen is:
+<BR>&nbsp;&nbsp; if (number of clients &lt; <B>client.min</B>) listen
+<BR>&nbsp;&nbsp; else if (number of clients == <B>client.max</B>) unlisten
+<BR>&nbsp;&nbsp; else if (at least <B>listen.min</B> daemons have less
+clients and I'm not the only listener) unlisten()
+
+<P>When a daemon gets <B>client.max</B> clients, it forks. If there
+are then <B>listen.max</B> potential listeners, the child process will
+never listen.
+<PRE>[ logging {
+&nbsp;&nbsp;&nbsp; [ facility&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "<I>syslog facility</I>"; ]
+&nbsp;&nbsp;&nbsp; [ level&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#number">number</A></I>; ]
+&nbsp;&nbsp;&nbsp; [ usage-log&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "<I>filename</I>"; ]
+&nbsp;&nbsp;&nbsp; [ dump-prefix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "<I>path</I>"; ]
+&nbsp;&nbsp;&nbsp; [ debug&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#number">number</A></I>; ]
+}; ]</PRE>
+The logging section has the following directives:
+<TABLE BORDER COLS=2 WIDTH="100%" NOSAVE >
+<TR NOSAVE>
+<TD WIDTH="50" NOSAVE>facility</TD>
+
+<TD>One of the names from syslog.conf, such as <B>local0</B>.</TD>
+</TR>
+
+<TR>
+<TD>level</TD>
+
+<TD>logging level. Currently, 2 or higher gives you a usage log,
+under two gives you nothing.</TD>
+</TR>
+
+<TR>
+<TD>usage-log</TD>
+
+<TD>file name of usage log. If not specified, <B>level</B>&nbsp;
+is forced to 0.</TD>
+</TR>
+
+<TR>
+<TD>dump-prefix</TD>
+
+<TD>Prefix used for dumping configuration and clients in response to appropriate
+signals. The actual file name has 'conf' or 'client' and the daemon
+pid appended to it.</TD>
+</TR>
+</TABLE>
+&nbsp;
+<PRE>[ default {
+&nbsp;&nbsp;&nbsp; [ timeout&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#time spec">time spec</A></I>; ]
+&nbsp;&nbsp;&nbsp; [ setup-timeout&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#time spec">time spec</A></I>; ]
+&nbsp;&nbsp;&nbsp; [ bufsize&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I><A HREF="#number">number</A></I>; ]
+}; ]</PRE>
+Defaults can be overridden for specific clients. The defaults are:&nbsp;
+<B>timeout</B> 2h; <B>setup-timeout</B> 15m; <B>bufsize</B> 32768;
+<PRE>[ env {
+&nbsp;&nbsp;&nbsp; NAME=value;&nbsp; ...
+}; ]</PRE>
+Specify global environment variables. These are accessed from method
+specific routines using <B>getEnv</B>(). If <I>value</I> contains
+spaces or semicolons, it must be enclosed in quotes. The ping and traceroute
+commands rely on the environment variables PING and TRACEROUTE (respectively),
+in order to work. If not defined, then the client is told that the command
+is not supported. Suggested values are:
+<UL>
+<PRE>PING="/usr/sbin/ping %z";
+TRACEROUTE="/usr/sbin/traceroute %z";</PRE>
+</UL>
+Which use the destination IP address as the only argument to the command.
+<PRE>route {
+&nbsp;&nbsp;&nbsp; { <I>IP4</I>/<I>IP4</I> <I><A HREF="#ifaddr">ifaddr</A></I> }; |
+&nbsp;&nbsp;&nbsp; { <I>IP4</I>/<I><A HREF="#number">number</A></I> <A HREF="#ifaddr">ifaddr</A> }; |
+&nbsp;&nbsp;&nbsp; { default <I><A HREF="#ifaddr">ifaddr</A></I> };
+&nbsp;&nbsp;&nbsp; ...
+};</PRE>
+Routes must be specified. If the requested destination address lives
+on a particular route, as specified by the <B>address</B>/<B>mask</B>,
+then <B>ifaddr</B> is used in the bind call. <B>mask</B> can either be
+a CIDR mask length, or a traditional netmask. <B>default</B> is equivalent
+to <B>0.0.0.0</B>/<B>0.</B>
+<PRE>method-list {
+&nbsp;&nbsp;&nbsp; { name "<I>method</I>"; number <I><A HREF="#number">number</A></I>; library "<I>file name</I>"; [ env { <I>NAME</I>=<I>value</I>; ... }; ] }; |&nbsp;
+&nbsp;&nbsp;&nbsp; { name "<I>method</I>"; number <I><A HREF="#number">number</A></I>; internal; [env { <I>NAME</I>=<I>value</I>; ... }; ] };
+&nbsp;&nbsp;&nbsp; ...
+};</PRE>
+The method list defines all of the methods available to the clients.&nbsp;
+<B>internal</B> indicates that the method is built in (in the method list
+in <I>method.c</I>), otherwise the library name must be specified.&nbsp;
+Socks V4 support requires that the <B>"v4"</B> method be defined.&nbsp;
+Method numbers 0-127 are IANA assigned, 128-254 are reserved for private
+methods. (255 is not a legal method number.) Method specific
+environment variables can be specified, and are found
+<BR>before the global environment variables.
+<PRE>client-method {
+&nbsp;&nbsp;&nbsp; { src { <I><A HREF="#hostlist">hostlist</A></I> }; method { "<I>method";</I> ... }; };
+&nbsp;&nbsp;&nbsp; ...
+};</PRE>
+For socks clients in <B>hostlist</B>, the client specified method list
+is compared against <B>methods</B>, and the first match is taken.
+If no match is found, the request is denied.
+<PRE>client {
+&nbsp;&nbsp;&nbsp; permit|deny|skip <I>request</I> {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; src&nbsp; { <I><A HREF="#hostlist">hostlist</A></I> };
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ user { "<I>user</I>"; ... }; ]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ dest { <I><A HREF="#hostlist">hostlist</A></I> };&nbsp;&nbsp;&nbsp; ]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ port { <I><A HREF="#portlist">portlist</A></I> };&nbsp;&nbsp;&nbsp; ]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ cmd "<I><A HREF="#command string">command string</A></I>"; ]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ timeout <I><A HREF="#time spec">time spec</A></I>;&nbsp;&nbsp;&nbsp; ]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ bufsize <I><A HREF="#number">number</A></I>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]
+&nbsp;&nbsp;&nbsp; };
+&nbsp;&nbsp;&nbsp; ...
+};</PRE>
+The first rule which matches the client request is used. <B>permit</B> grants the
+client's request, <B>deny</B> denies the request, and <B>skip</B> causes rule
+parsing to skip the next rule and continue (after possibly assigning new buffer size
+and timeout, as well as command execution - as specified by this rule.) Each of
+the specified components must match. <B>request</B> is one of <I>connect</I>,
+<I>bind</I>, <I>udp-associate</I>, <I>ping</I>, or <I>traceroute</I>. <B>src</B>
+and <B>user</B> refer to the requesting host and user, <B>dest</B> and<B>
+port</B> refer to the requested destination.<B> cmd</B> specifies a command
+to be executed when the rule is matched. <B>timeout</B> and <B>bufsize</B>
+override the global defaults when the rule is matched.
+<PRE><A NAME="ifaddr"></A><I>ifaddr:
+&nbsp;&nbsp;&nbsp; "ifname"; | <A HREF="#hostaddr">hostaddr</A></I>;</PRE>
+Interface names take precidence over hostnames, and use the IP address
+bound to that interface (at the time the config file is read.)
+<PRE><A NAME="hostlist"></A><I>hostlist</I>: (one or more of the following:)
+&nbsp;&nbsp;&nbsp; <I>IP4</I>/<I>IP4</I>; | <I>IP4</I>/<I><A HREF="#number">number</A></I>; | <I>IP4</I>; | default; | "<I>name</I>";
+&nbsp;&nbsp;&nbsp; ...</PRE>
+If multiple hosts (or host ranges) are specified, they are 'or' clauses.
+<PRE><A NAME="hostaddr"></A><I>hostaddr</I>:
+&nbsp;&nbsp;&nbsp; <I>IP4</I>; | host; | "<I>hostname</I>";</PRE>
+In order to use <B>host</B> or a name, there must be only one IP address
+for the name given. <B>host</B> uses the result of gethostname()
+as the name of the host.
+<PRE><A NAME="portlist"></A><I>portlist</I>:
+&nbsp;&nbsp;&nbsp; <I><A HREF="#port num">port</A></I>; | <I><A HREF="#port num">port</A></I>-<I><A HREF="#port num">port</A></I>;
+&nbsp;&nbsp;&nbsp; ...</PRE>
+One or more ports.
+<PRE><A NAME="port num"></A><I>port</I>:
+&nbsp;&nbsp;&nbsp; <I><A HREF="#number">number</A></I>; | "<I>name</I>";
+&nbsp;&nbsp;&nbsp; ...</PRE>
+
+<PRE><A NAME="time spec"></A><I>time spec</I>:
+&nbsp;&nbsp;&nbsp; <I>number</I>[wdhms]...;</PRE>
+Time can be specified either as a number (of seconds), or as a collection
+of numbers and multipliers. For example, <B>1d2h</B> specifies
+1 day, 2 hours.
+<PRE><A NAME="number"></A>number:
+&nbsp;&nbsp;&nbsp; <I>decimal_number</I> | 0x<I>hex_number</I> |&nbsp; 0o<I>octal_number</I></PRE>
+Numbers can be specified in decimal, hex, or octal.
+<PRE><A NAME="command string"></A><I>command string</I>:</PRE>
+When a ruleset is matched, a command can be executed. This is done
+by forking and executing the command in the child process. The following
+escapes are available in command strings:
+<BR>&nbsp;
+<TABLE BORDER COLS=2 WIDTH="100%" NOSAVE >
+<TR NOSAVE>
+<TD WIDTH="30" NOSAVE>%A</TD>
+
+<TD>Name of source host</TD>
+</TR>
+
+<TR>
+<TD>%a</TD>
+
+<TD>IP address of source host</TD>
+</TR>
+
+<TR>
+<TD>%c</TD>
+
+<TD>Request type (command).</TD>
+</TR>
+
+<TR>
+<TD>%p</TD>
+
+<TD>Process id of sockd</TD>
+</TR>
+
+<TR>
+<TD>%S</TD>
+
+<TD>destination service name</TD>
+</TR>
+
+<TR>
+<TD>%s</TD>
+
+<TD>destination port number</TD>
+</TR>
+
+<TR>
+<TD>%u</TD>
+
+<TD>user name</TD>
+</TR>
+
+<TR>
+<TD>%Z</TD>
+
+<TD>Destination host name</TD>
+</TR>
+
+<TR>
+<TD>%z</TD>
+
+<TD>destination host address</TD>
+</TR>
+</TABLE>
+&nbsp;
+</BODY>
+</HTML>

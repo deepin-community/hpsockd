@@ -1,0 +1,21 @@
+B.05.00.%70
+    - First Debian build.
+
+B.05.00.%47
+    - Fix handling of EMFILE.
+
+B.05.00.%37
+    - Fix brain damage in validate on udp associate.
+    - Add -f option to log2ascii (same as tail -f)
+    - Get rid of 'family 0' message for connect/bind requests that terminate
+      early.
+    - Deal with closeConnection yanking structures out from under us, resulting
+      in SEGV.  (significant design change, coming up...)
+
+B.05.00.%35
+    - Fix UDP logging (show peer address, quit complaining about destination
+      address family).
+    - Cleanup various log messages to give a bit more detail.
+    - Fix timeouts (this time for sure...)
+    - Add 'skip' rules
+    - Change 'loser' to 'nolisten' in sdc status output
