@@ -2,7 +2,7 @@ Source: hpsockd
 Section: net
 Priority: extra
 Maintainer: LaMont Jones <lamont@debian.org>
-Build-Depends: libdb-dev (>=4.6.19), debhelper (>=5), flex, byacc
+Build-Depends: libdb-dev (>=4.6.19), debhelper (>=10), flex, byacc
 Standards-Version: 3.7.3
 XS-Vcs-Browser: http://git.debian.org/?p=users/lamont/hpsockd.git
 XS-Vcs-Git: git://git.debian.org/~lamont/hpsockd.git
